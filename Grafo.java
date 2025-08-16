@@ -1,100 +1,107 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 public class Grafo{
-  private int numVertices;
-  private int numArestas;
-  private Map<Integer, HashSet<Integer>> adjacencias;
+  private Map<Integer, List<Integer>> adjacencias;
 
   public Grafo() {
-    this.numArestas = 0;
-    this.numVertices = 0;
-    this.adjacencias = new HashMap<>();
+    adjacencias = new HashMap<>();
   }
 
-  public void adicionarVertice(Integer v) {
-    adjacencias.putIfAbsent(v, new HashSet<>());
-    this.numVertices++;
+  public void addVertice(int v) {
+    adjacencias.putIfAbsent(v, new ArrayList<>());
   }
 
-  public void adicionarAresta(Integer u, Integer v) {
-    // Caso os vértices não existam, eles serão adicionados.
-    if(!adjacencias.containsKey(u)) this.adicionarVertice(u);
-    if(!adjacencias.containsKey(v)) this.adicionarVertice(v);
+  public void addAresta(int u,  int v) {
+    List<Integer> vizinhos = adjacencias.get(u);
 
-    boolean arestaExiste = adjacencias.get(u).contains(v);
+    int index = Collections.binarySearch(vizinhos, v);
 
-    if(!arestaExiste) {
-      adjacencias.get(u).add(v);
-      adjacencias.get(v).add(u);
-      this.numArestas++;
-    }
+    if(index < 0)
+      index = -index -1;
+
+    vizinhos.add(index, v);
   }
 
-  public void removerAresta(Integer u, Integer v) {
-    HashSet<Integer> vizinhosU = adjacencias.get(u);
-    HashSet<Integer> vizinhosV = adjacencias.get(v);
+  public boolean verificarAdjacencia(int u, int v) {
+    List<Integer> vizinhos = adjacencias.get(u);
+    int index = Collections.binarySearch(vizinhos, v);
 
-    boolean arestaExiste = vizinhosU.contains(v);
-
-    if(arestaExiste) {
-      vizinhosU.remove(v);
-      vizinhosV.remove(u);
-    }
-
-    this.numArestas--;
+    return index >= 0;
   }
 
-  public static Grafo lerArquivo(String nomeArquivo) {
+  public Grafo complemento() {
     Grafo grafo = new Grafo();
 
-    try (BufferedReader br = new BufferedReader(new FileReader(nomeArquivo))) {
-      String linha = br.readLine();
-      while (linha != null) {
-        linha = linha.trim();
+    for (Integer v : adjacencias.keySet()) {
+      grafo.addVertice(v);
+    }
 
-        String[] partes = linha.split("\\s+");
-
-        if (partes.length != 2) {
-          System.out.println("Linha inválida: " + linha);
-          linha = br.readLine();
-          continue;
-        };
-
-        int u = Integer.parseInt(partes[0]);
-        int v = Integer.parseInt(partes[1]);
-
-        grafo.adicionarAresta(u, v);
-        linha = br.readLine();
+    for (Integer u : adjacencias.keySet()) {
+      for (Integer v : adjacencias.keySet()) {
+        if (!u.equals(v) && !this.verificarAdjacencia(u, v)) {
+          grafo.addAresta(u, v);
+        }
       }
-    } catch (IOException e) {
-      System.err.println("Erro ao ler o arquivo: " + e.getMessage());
     }
 
     return grafo;
   }
 
-  public HashSet<Integer> getVizinhos(Integer u) {
-    return this.adjacencias.get(u);
-  }
+  public static Grafo lerArquivo(String path) {
+    Grafo grafo = new Grafo();
 
-  public String toString() {
-    StringBuilder grafoStr = new StringBuilder();
+    try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+      for(String linha = br.readLine(); linha != null; linha = br.readLine()) {
+        linha = linha.trim();
+        if (linha.isEmpty()) continue;
 
-    String num_vertices = "Número de vertices: " + this.numVertices + "\n";
-    String num_arestas = "Número de arestas:   " + this.numArestas + "\n";
+        String[] partes = linha.split("\\s+");
 
-    grafoStr.append(num_vertices);
-    grafoStr.append(num_arestas);
+        int vertice = Integer.parseInt(partes[0]);
 
-    for(Integer i : this.adjacencias.keySet()) {
+        grafo.addVertice(vertice);
 
-      grafoStr.append(String.format("%4d: ", i));
-      grafoStr.append(getVizinhos(i).toString()).append("\n");
+        for (int i = 1; i < partes.length; i++) {
+          int vizinho = Integer.parseInt(partes[i]);
+          grafo.addAresta(vertice, vizinho);
+        }
+      }
+    } catch (IOException e) {
+      System.err.println("Erro ao ler arquivo: " + path);
     }
 
-    return grafoStr.toString();
+    return grafo;
+  }
+
+  public String salvarArquivo(String diretorio) {
+    String nome = UUID.randomUUID().toString();
+    String path = diretorio + "/" + nome + ".txt";
+
+    try (BufferedWriter bw = new BufferedWriter(new FileWriter(path))) {
+      for (Map.Entry<Integer, List<Integer>> entry : adjacencias.entrySet()) {
+        Integer vertice = entry.getKey();
+        List<Integer> vizinhos = entry.getValue();
+
+        bw.write(vertice.toString());
+        for (Integer vizinho : vizinhos) {
+          bw.write(" " + vizinho);
+        }
+        bw.newLine();
+      }
+    } catch (IOException e) {
+      System.out.println("Erro ao gravar arquivo");
+    }
+
+    return path;
+  }
+
+  public static void main(String[] args) {
+    Grafo grafo = Grafo.lerArquivo("grafo.txt");
+    Grafo complemento = grafo.complemento();
+
+    complemento.salvarArquivo("./grafosSalvos");
+
+    System.out.println(grafo.verificarAdjacencia(1, 10));
   }
 }
