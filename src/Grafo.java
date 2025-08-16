@@ -1,3 +1,5 @@
+package src;
+
 import java.io.*;
 import java.util.*;
 
@@ -90,18 +92,9 @@ public class Grafo{
         bw.newLine();
       }
     } catch (IOException e) {
-      System.out.println("Erro ao gravar arquivo");
+      System.out.println(e);
     }
 
     return path;
-  }
-
-  public static void main(String[] args) {
-    Grafo grafo = Grafo.lerArquivo("grafo.txt");
-    Grafo complemento = grafo.complemento();
-
-    complemento.salvarArquivo("./grafosSalvos");
-
-    System.out.println(grafo.verificarAdjacencia(1, 10));
   }
 }
