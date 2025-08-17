@@ -8,7 +8,7 @@ public class CoberturaDeVertices {
         Grafo grafoCopia = grafo.copia();
 
         while(grafoCopia.getNumArestas() > 0) {
-            Aresta aresta = grafoCopia.arestaAleatoria();
+            Aresta aresta = grafoCopia.getArestaArbitraria();
             if(aresta == null) break;
 
             int u = aresta.getU();
