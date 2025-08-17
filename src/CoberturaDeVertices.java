@@ -8,11 +8,11 @@ public class CoberturaDeVertices {
         Grafo grafoCopia = grafo.copia();
 
         while(grafoCopia.getNumArestas() > 0) {
-            List<Integer> aresta = grafoCopia.arestaAleatoria();
+            Aresta aresta = grafoCopia.arestaAleatoria();
             if(aresta == null) break;
 
-            int u = aresta.get(0);
-            int v = aresta.get(1);
+            int u = aresta.getU();
+            int v = aresta.getV();
 
             c.add(u);
             c.add(v);

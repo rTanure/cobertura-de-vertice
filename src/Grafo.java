@@ -41,8 +41,8 @@ public class Grafo{
     return this.adjacencias;
   }
 
-  // Retorna uma aresta aleatoria do grafo
-  public Aresta arestaAleatoria() {
+  // Retorna uma aresta arbitraria
+  public Aresta getArestaArbitraria() {
     if(this.numArestas == 0) return null;
 
     Set<Integer> vertices = adjacencias.keySet();
