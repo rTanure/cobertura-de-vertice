@@ -2,7 +2,6 @@ package src;
 
 import java.io.*;
 import java.util.*;
-import java.util.AbstractMap.SimpleEntry;
 
 public class Grafo{
   private Map<Integer, BitSet> adjacencias;
@@ -82,6 +81,17 @@ public class Grafo{
     }
   }
 
+  public void removerVertice(int u) {
+    BitSet vizinhos = this.adjacencias.get(u);
+
+    // Remove todas as arestas que vão de v para u
+    for (int v = vizinhos.nextSetBit(0); v >= 0; v = vizinhos.nextSetBit(v +1)) {
+      removerAresta(v, u);
+    }
+
+    this.adjacencias.remove(u);
+  }
+
   private void setVizinhos(int u, BitSet bitSet) {
     this.adjacencias.put(u, (BitSet) bitSet.clone());
   }
@@ -156,9 +166,8 @@ public class Grafo{
     return grafo;
   }
 
-  public String salvarArquivo(String diretorio) {
-    String nome = UUID.randomUUID().toString();
-    String path = diretorio + "/" + nome + ".txt";
+  public String salvarArquivo(String nome) {
+    String path = nome + ".txt";
 
     try (BufferedWriter bw = new BufferedWriter(new FileWriter(path))) {
       for (Map.Entry<Integer, BitSet> entry : this.adjacencias.entrySet()) {
