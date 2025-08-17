@@ -12,15 +12,13 @@ public class Grafo{
     return this.numArestas;
   }
 
+  // Construtor - Grafo vazio
   public Grafo() {
     this.numArestas = 0;
     this.adjacencias = new HashMap<>();
   }
 
-  public Set<Integer> getVertices() {
-    return this.adjacencias.keySet();
-  }
-
+  // Construtor - Grafo com 'numVertices' vertices sem arestas
   public Grafo(Integer numVertices) {
     this.adjacencias = new HashMap<>();
     for (int i = 0; i < numVertices; i++)
@@ -28,7 +26,23 @@ public class Grafo{
     this.numArestas = 0;
   }
 
-  public List<Integer> arestaAleatoria() {
+  // Retorna um set com todos os vertices do grafo
+  public Set<Integer> getVertices() {
+    return this.adjacencias.keySet();
+  }
+
+  // Retorna o BitSet que representa os vizinhos do vértice u
+  public BitSet getVizinhos(int u) {
+    return adjacencias.get(u);
+  }
+
+  // Retorna a lista de adjacencias do grafo
+  public Map<Integer, BitSet> getAdjacencias() {
+    return this.adjacencias;
+  }
+
+  // Retorna uma aresta aleatoria do grafo
+  public Aresta arestaAleatoria() {
     if(this.numArestas == 0) return null;
 
     Set<Integer> vertices = adjacencias.keySet();
@@ -36,14 +50,10 @@ public class Grafo{
     for(Integer v : vertices) {
       BitSet vizinhos = adjacencias.get(v);
       for (int u = vizinhos.nextSetBit(0); u >= 0; u = vizinhos.nextSetBit(u + 1)){
-        return List.of(v, u);
+        return new Aresta(u, v);
       }
     }
     return null;
-  }
-
-  public BitSet getVizinhos(int u) {
-    return adjacencias.get(u);
   }
 
   public void addVertice(int v) {
@@ -73,7 +83,7 @@ public class Grafo{
   }
 
   private void setVizinhos(int u, BitSet bitSet) {
-    this.adjacencias.get(u).or(bitSet);
+    this.adjacencias.put(u, (BitSet) bitSet.clone());
   }
 
   private void setNumArestas(int numArestas) {
@@ -166,5 +176,11 @@ public class Grafo{
     }
 
     return path;
+  }
+
+  public static void main(String[] args) {
+    Grafo grafo = GeradorInstancias.instanciaAleatoria(5, 0.2);
+    grafo.salvarArquivo("./");
+    grafo.complemento().salvarArquivo("./");
   }
 }
