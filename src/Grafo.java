@@ -2,45 +2,115 @@ package src;
 
 import java.io.*;
 import java.util.*;
+import java.util.AbstractMap.SimpleEntry;
 
 public class Grafo{
-  private Map<Integer, List<Integer>> adjacencias;
+  private Map<Integer, BitSet> adjacencias;
+  private Integer numArestas;
+
+  public Integer getNumArestas() {
+    return this.numArestas;
+  }
 
   public Grafo() {
-    adjacencias = new HashMap<>();
+    this.numArestas = 0;
+    this.adjacencias = new HashMap<>();
+  }
+
+  public Set<Integer> getVertices() {
+    return this.adjacencias.keySet();
+  }
+
+  public Grafo(Integer numVertices) {
+    this.adjacencias = new HashMap<>();
+    for (int i = 0; i < numVertices; i++)
+      this.adjacencias.put(i, new BitSet());
+    this.numArestas = 0;
+  }
+
+  public List<Integer> arestaAleatoria() {
+    if(this.numArestas == 0) return null;
+
+    Set<Integer> vertices = adjacencias.keySet();
+
+    for(Integer v : vertices) {
+      BitSet vizinhos = adjacencias.get(v);
+      for (int u = vizinhos.nextSetBit(0); u >= 0; u = vizinhos.nextSetBit(u + 1)){
+        return List.of(v, u);
+      }
+    }
+    return null;
+  }
+
+  public BitSet getVizinhos(int u) {
+    return adjacencias.get(u);
   }
 
   public void addVertice(int v) {
-    adjacencias.putIfAbsent(v, new ArrayList<>());
+    this.adjacencias.put(v, new BitSet());
   }
 
   public void addAresta(int u,  int v) {
-    List<Integer> vizinhos = adjacencias.get(u);
+    BitSet vizinhosU = this.adjacencias.get(u);
+    BitSet vizinhosV = this.adjacencias.get(v);
 
-    int index = Collections.binarySearch(vizinhos, v);
+    if(!vizinhosU.get(u)) {
+      vizinhosU.set(v);
+      vizinhosV.set(u);
+      this.numArestas++;
+    }
+  }
 
-    if(index < 0)
-      index = -index -1;
+  public void removerAresta(int u, int v) {
+    BitSet vizinhosU = this.adjacencias.get(u);
+    BitSet vizinhosV = this.adjacencias.get(v);
 
-    vizinhos.add(index, v);
+    if(vizinhosU.get(u) || vizinhosV.get(u)) {
+      vizinhosU.clear(v);
+      vizinhosV.clear(u);
+      this.numArestas--;
+    }
+  }
+
+  private void setVizinhos(int u, BitSet bitSet) {
+    this.adjacencias.get(u).or(bitSet);
+  }
+
+  private void setNumArestas(int numArestas) {
+    this.numArestas = numArestas;
+  }
+
+  public Grafo copia() {
+    Grafo grafo = new Grafo();
+
+    for (Map.Entry<Integer, BitSet> entry : this.adjacencias.entrySet()) {
+      int vertice = entry.getKey();
+      BitSet vizinhos = entry.getValue();
+
+      grafo.addVertice(vertice);
+      grafo.setVizinhos(vertice, vizinhos);
+      grafo.setNumArestas(this.numArestas);
+
+      grafo.adjacencias.get(vertice).or((BitSet) vizinhos.clone());
+    }
+
+    return grafo;
   }
 
   public boolean verificarAdjacencia(int u, int v) {
-    List<Integer> vizinhos = adjacencias.get(u);
-    int index = Collections.binarySearch(vizinhos, v);
-
-    return index >= 0;
+    BitSet vizinhos = this.adjacencias.get(u);
+    return vizinhos.get(v);
   }
 
   public Grafo complemento() {
     Grafo grafo = new Grafo();
 
-    for (Integer v : adjacencias.keySet()) {
+    for (Integer v : this.adjacencias.keySet()) {
       grafo.addVertice(v);
     }
 
-    for (Integer u : adjacencias.keySet()) {
-      for (Integer v : adjacencias.keySet()) {
+    for (Integer u : this.adjacencias.keySet()) {
+      for (Integer v : this.adjacencias.keySet()) {
         if (!u.equals(v) && !this.verificarAdjacencia(u, v)) {
           grafo.addAresta(u, v);
         }
@@ -81,12 +151,12 @@ public class Grafo{
     String path = diretorio + "/" + nome + ".txt";
 
     try (BufferedWriter bw = new BufferedWriter(new FileWriter(path))) {
-      for (Map.Entry<Integer, List<Integer>> entry : adjacencias.entrySet()) {
+      for (Map.Entry<Integer, BitSet> entry : this.adjacencias.entrySet()) {
         Integer vertice = entry.getKey();
-        List<Integer> vizinhos = entry.getValue();
+        BitSet vizinhos = entry.getValue();
 
         bw.write(vertice.toString());
-        for (Integer vizinho : vizinhos) {
+        for (int vizinho = vizinhos.nextSetBit(0); vizinho >= 0; vizinho = vizinhos.nextSetBit(vizinho + 1)) {
           bw.write(" " + vizinho);
         }
         bw.newLine();
