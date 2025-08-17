@@ -62,4 +62,7 @@ public class CoberturaDeVertices {
 
         return c;
     }
+
+
+
 }

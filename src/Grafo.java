@@ -63,7 +63,7 @@ public class Grafo{
     BitSet vizinhosU = this.adjacencias.get(u);
     BitSet vizinhosV = this.adjacencias.get(v);
 
-    if(!vizinhosU.get(u)) {
+    if(!vizinhosU.get(v)) {
       vizinhosU.set(v);
       vizinhosV.set(u);
       this.numArestas++;
