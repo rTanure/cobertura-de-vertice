@@ -2,23 +2,8 @@ package src;
 
 import java.util.*;
 
-public class GeradorInstancias {
-    public static Grafo instanciaAleatoria(int numVertices, double densidade) {
-        Grafo grafo = new Grafo(numVertices);
-        Random random = new Random();
-
-        for(int v = 0; v < numVertices; v++) {
-            for (int u = v + 1; u < numVertices; u++) {
-                if(random.nextDouble() < densidade && u != v) {
-                    grafo.addAresta(u, v);
-                }
-            }
-        }
-
-        return grafo;
-    }
-
-    public static Grafo grafoComCliqueMaxima(int numVertices, int cliqueMaxima, double densidadeRelativa) {
+public class Gerador {
+    private static Grafo grafoComCliqueMaxima(int numVertices, int cliqueMaxima, double densidadeRelativa) {
         if(cliqueMaxima > numVertices) cliqueMaxima = numVertices;
         Grafo grafo = new Grafo(numVertices);
 
@@ -38,6 +23,7 @@ public class GeradorInstancias {
             }
         }
 
+        // union find
         for(int v = cliqueMaxima; v < numVertices; v++) {
             for(int w = v+1; w < numVertices; w++) {
                 int comuns = 0;

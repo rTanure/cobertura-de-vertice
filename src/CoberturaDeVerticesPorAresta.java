@@ -2,15 +2,16 @@ package src;
 
 import java.util.*;
 public class CoberturaDeVerticesPorAresta {
+    // Referência:
 
-    public Set<Integer> coberturaPorAresta(Grafo grafo, int k) {
+    public static Set<Integer> coberturaPorAresta(Grafo grafo, int k) {
         if (grafo.getVertices().size() < k) {
             return new HashSet<>(grafo.getVertices());
         }
         return coberturaPorArestaRec(grafo, k, new HashSet<>());
     }
 
-    private Set<Integer> coberturaPorArestaRec(Grafo grafo, int k, Set<Integer> coberturaAtual) {
+    private static Set<Integer> coberturaPorArestaRec(Grafo grafo, int k, Set<Integer> coberturaAtual) {
         // Caso base: todas as arestas estão cobertas
         if (grafo.getNumArestas() == 0) {
             return new HashSet<>(coberturaAtual);
@@ -52,10 +53,23 @@ public class CoberturaDeVerticesPorAresta {
         return resultadoU.size() <= resultadoV.size() ? resultadoU : resultadoV;
     }
 
-    private void removerArestasIncidentes(Grafo grafo, int vertice) {
+    private static void removerArestasIncidentes(Grafo grafo, int vertice) { // TODO - Mover esse código para a classe Grafo
         BitSet vizinhos = grafo.getVizinhos(vertice);
         for (int v = vizinhos.nextSetBit(0); v >= 0; v = vizinhos.nextSetBit(v + 1)) {
             grafo.removerAresta(vertice, v);
         }
+    }
+
+    public static Set<Integer> resolver(Grafo grafo) {
+        int n = grafo.getVertices().size();
+
+        for (int k = 0; k <= n; k++) {
+            Set<Integer> cobertura = coberturaPorAresta(grafo, k);
+            if (cobertura.size() <= k) {
+                return cobertura;
+            }
+        }
+
+        return new HashSet<>(grafo.getVertices());
     }
 }

@@ -1,9 +1,13 @@
 package src;
 
 import java.io.*;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.*;
 
 public class Grafo{
+
+  private static final String DIRETORIO_GRAFOS = "grafos";
   private Map<Integer, BitSet> adjacencias;
   private Integer numArestas;
 
@@ -56,7 +60,7 @@ public class Grafo{
   }
 
   public void addVertice(int v) {
-    this.adjacencias.put(v, new BitSet());
+    this.adjacencias.putIfAbsent(v, new BitSet());
   }
 
   public void addAresta(int u,  int v) {
@@ -79,6 +83,11 @@ public class Grafo{
       vizinhosV.clear(u);
       this.numArestas--;
     }
+  }
+
+  public double densidade() {
+    Integer numVertices = adjacencias.keySet().size();
+    return (double) (2 * this.numArestas) / (numVertices * (numVertices - 1));
   }
 
   public void removerVertice(int u) {
@@ -140,8 +149,9 @@ public class Grafo{
     return grafo;
   }
 
-  public static Grafo lerArquivo(String path) {
+  public static Grafo lerArquivo(String nome) {
     Grafo grafo = new Grafo();
+    String path = DIRETORIO_GRAFOS + "/" + nome + ".txt";
 
     try (BufferedReader br = new BufferedReader(new FileReader(path))) {
       for(String linha = br.readLine(); linha != null; linha = br.readLine()) {
@@ -156,6 +166,7 @@ public class Grafo{
 
         for (int i = 1; i < partes.length; i++) {
           int vizinho = Integer.parseInt(partes[i]);
+          grafo.addVertice(vizinho);
           grafo.addAresta(vertice, vizinho);
         }
       }
@@ -166,8 +177,20 @@ public class Grafo{
     return grafo;
   }
 
+  private void criaDiretorioSeNaoExiste(String diretorio) {
+    File dir = new File(diretorio);
+    if (!dir.exists()) dir.mkdirs();
+  }
+
   public String salvarArquivo(String nome) {
-    String path = nome + ".txt";
+
+    criaDiretorioSeNaoExiste(DIRETORIO_GRAFOS);
+
+    if(nome == null || nome.isEmpty())
+      nome = Timestamp.from(Instant.now()).toString();
+
+    String path = DIRETORIO_GRAFOS + "/" + nome + ".txt";
+
 
     try (BufferedWriter bw = new BufferedWriter(new FileWriter(path))) {
       for (Map.Entry<Integer, BitSet> entry : this.adjacencias.entrySet()) {
@@ -187,9 +210,4 @@ public class Grafo{
     return path;
   }
 
-  public static void main(String[] args) {
-    Grafo grafo = GeradorInstancias.instanciaAleatoria(5, 0.2);
-    grafo.salvarArquivo("./");
-    grafo.complemento().salvarArquivo("./");
-  }
 }
