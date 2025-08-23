@@ -2,7 +2,7 @@ package src;
 
 import java.util.*;
 public class CoberturaDeVerticesPorAresta {
-    // Referência:
+    // Referência: https://www.ime.usp.br/~pf/analise_de_algoritmos/aulas/v-cover-fpt.html
 
     public static Set<Integer> coberturaPorAresta(Grafo grafo, int k) {
         if (grafo.getVertices().size() < k) {
@@ -36,8 +36,8 @@ public class CoberturaDeVerticesPorAresta {
         Grafo grafoV = grafo.copia();
 
         // Remove todas as arestas incidentes a u e v
-        removerArestasIncidentes(grafoU, u);
-        removerArestasIncidentes(grafoV, v);
+        grafoU.removerArestasIncidentes(u);
+        grafoV.removerArestasIncidentes(v);
 
         // Ramo com u
         Set<Integer> coberturaComU = new HashSet<>(coberturaAtual);
@@ -51,13 +51,6 @@ public class CoberturaDeVerticesPorAresta {
 
         // Retorna o menor conjunto
         return resultadoU.size() <= resultadoV.size() ? resultadoU : resultadoV;
-    }
-
-    private static void removerArestasIncidentes(Grafo grafo, int vertice) { // TODO - Mover esse código para a classe Grafo
-        BitSet vizinhos = grafo.getVizinhos(vertice);
-        for (int v = vizinhos.nextSetBit(0); v >= 0; v = vizinhos.nextSetBit(v + 1)) {
-            grafo.removerAresta(vertice, v);
-        }
     }
 
     public static Set<Integer> resolver(Grafo grafo) {

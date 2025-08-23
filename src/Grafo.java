@@ -210,4 +210,10 @@ public class Grafo{
     return path;
   }
 
+  public  void removerArestasIncidentes(int vertice) {
+    BitSet vizinhos = this.getVizinhos(vertice);
+    for (int v = vizinhos.nextSetBit(0); v >= 0; v = vizinhos.nextSetBit(v + 1)) {
+      this.removerAresta(vertice, v);
+    }
+  }
 }
