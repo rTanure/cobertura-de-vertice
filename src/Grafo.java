@@ -11,14 +11,6 @@ public class Grafo{
   private Map<Integer, BitSet> adjacencias;
   private Integer numArestas;
 
-  public Integer getNumArestas() {
-    return this.numArestas;
-  }
-
-  public Integer grauDoVertive(Integer v) {
-    return this.adjacencias.get(v).cardinality();
-  }
-
   // Construtor - Grafo vazio
   public Grafo() {
     this.numArestas = 0;
@@ -33,22 +25,38 @@ public class Grafo{
     this.numArestas = 0;
   }
 
+  // Retorna o número de arestas do graof.
+  // O(1)
+  public Integer getNumArestas() {
+    return this.numArestas;
+  }
+
+  // Retorna o grau de um vértice.
+  // O(|V|)
+  public Integer grauDoVertive(Integer v) {
+    return this.adjacencias.get(v).cardinality();
+  }
+
   // Retorna um set com todos os vertices do grafo
+  // O(1)
   public Set<Integer> getVertices() {
     return this.adjacencias.keySet();
   }
 
   // Retorna o BitSet que representa os vizinhos do vértice u
+  // O(1)
   public BitSet getVizinhos(int u) {
     return adjacencias.get(u);
   }
 
   // Retorna a lista de adjacencias do grafo
+  // O(1)
   public Map<Integer, BitSet> getAdjacencias() {
     return this.adjacencias;
   }
 
   // Retorna uma aresta arbitraria
+  // O(|V| + d), d -> grau do vértice retornado
   public Aresta getArestaArbitraria() {
     if(this.numArestas == 0) return null;
 
@@ -63,10 +71,14 @@ public class Grafo{
     return null;
   }
 
+  // Adiciona um novo vértice
+  // O(1)
   public void addVertice(int v) {
     this.adjacencias.putIfAbsent(v, new BitSet());
   }
 
+  // Adiciona uma aresta no grafo
+  // O(1)
   public void addAresta(int u,  int v) {
     BitSet vizinhosU = this.adjacencias.get(u);
     BitSet vizinhosV = this.adjacencias.get(v);
@@ -78,6 +90,8 @@ public class Grafo{
     }
   }
 
+  // Remove uma aresta no grafo
+  // O(1)
   public void removerAresta(int u, int v) {
     BitSet vizinhosU = this.adjacencias.get(u);
     BitSet vizinhosV = this.adjacencias.get(v);
@@ -89,30 +103,28 @@ public class Grafo{
     }
   }
 
+
+  // Retorna a densidade do grafo
+  // O(1)
   public double densidade() {
     Integer numVertices = adjacencias.keySet().size();
     return (double) (2 * this.numArestas) / (numVertices * (numVertices - 1));
   }
 
-  public void removerVertice(int u) {
-    BitSet vizinhos = this.adjacencias.get(u);
-
-    // Remove todas as arestas que vão de v para u
-    for (int v = vizinhos.nextSetBit(0); v >= 0; v = vizinhos.nextSetBit(v +1)) {
-      removerAresta(v, u);
-    }
-
-    this.adjacencias.remove(u);
-  }
-
+  // Clona um bitset para setar os vizinhos
+  // O(|V|)
   private void setVizinhos(int u, BitSet bitSet) {
     this.adjacencias.put(u, (BitSet) bitSet.clone());
   }
 
+  // Clona o numero de arestas
+  // O(1)
   private void setNumArestas(int numArestas) {
     this.numArestas = numArestas;
   }
 
+  // Retorna uma cópia do grafo
+  // O(V + E)
   public Grafo copia() {
     Grafo grafo = new Grafo();
 
@@ -130,11 +142,15 @@ public class Grafo{
     return grafo;
   }
 
+  // Verifica se há aresta entre u e v
+  // O(1)
   public boolean verificarAdjacencia(int u, int v) {
     BitSet vizinhos = this.adjacencias.get(u);
     return vizinhos.get(v);
   }
 
+  // Retorna o grafo complementar
+  // O(|V|^2)
   public Grafo complemento() {
     Grafo grafo = new Grafo();
 
@@ -153,6 +169,8 @@ public class Grafo{
     return grafo;
   }
 
+  // Lê um grafo de um arquivo texto
+  // O(V + E)
   public static Grafo lerArquivo(String nome) {
     Grafo grafo = new Grafo();
     String path = DIRETORIO_GRAFOS + "/" + nome + ".txt";
@@ -181,11 +199,15 @@ public class Grafo{
     return grafo;
   }
 
+  // Cria o diretório para salvar os grafos
+  // O(1)
   private void criaDiretorioSeNaoExiste(String diretorio) {
     File dir = new File(diretorio);
     if (!dir.exists()) dir.mkdirs();
   }
 
+  // Salva o grafo em um arquivo texto
+  // O(V + E)
   public String salvarArquivo(String nome) {
 
     criaDiretorioSeNaoExiste(DIRETORIO_GRAFOS);
@@ -214,6 +236,8 @@ public class Grafo{
     return path;
   }
 
+  // Remove todas as arestas incidentes em um vértice
+  // O(Grau do vértice),
   public  void removerArestasIncidentes(int vertice) {
     BitSet vizinhos = this.getVizinhos(vertice);
     for (int v = vizinhos.nextSetBit(0); v >= 0; v = vizinhos.nextSetBit(v + 1)) {
