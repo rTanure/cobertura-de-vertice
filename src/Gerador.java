@@ -9,32 +9,32 @@ public class Gerador {
 
         Random random = new Random();
 
-        for(int i = 0; i < cliqueMaxima; i++) {
-            for(int j = i + 1 ; j < cliqueMaxima; j++) {
-                grafo.addAresta(i, j);
-            }
-        }
+        for (int u = 0; u < numVertices; u++) {
+            for (int v = u; v < numVertices; v++) {
+                // Impede a criação de
+                if(u == v) continue;
 
-        for(int v = cliqueMaxima; v < numVertices; v++) {
-            for(int u = 0; u < cliqueMaxima; u++) {
-                if(random.nextDouble() < densidadeRelativa) {
-                    grafo.addAresta(v, u);
+                // Se a aresta está na clique
+                if (u < cliqueMaxima && v < cliqueMaxima) {
+                    grafo.addAresta(u, v);
+                    continue;
                 }
-            }
-        }
 
-        // union find
-        for(int v = cliqueMaxima; v < numVertices; v++) {
-            for(int w = v+1; w < numVertices; w++) {
-                int comuns = 0;
-                for(int c = 0; c < cliqueMaxima; c++) {
-                    if(grafo.verificarAdjacencia(v, c) && grafo.verificarAdjacencia(w, c)) {
-                        comuns++;
+                if (random.nextDouble() >= densidadeRelativa) continue;
+
+                // Se a aresta é entre um vértice da clique e um de fora
+                Integer grau_v = grafo.grauDoVertive(v);
+                if (u < cliqueMaxima) {
+                    if (grau_v < cliqueMaxima) {
+                        grafo.addAresta(u, v);
+                        continue;
                     }
                 }
 
-                if(comuns < cliqueMaxima - 1 && random.nextDouble() < densidadeRelativa) {
-                    grafo.addAresta(v, w);
+                // Se a aresta é entre dois vértices de fora da clique
+                Integer grau_u = grafo.grauDoVertive(u);
+                if (grau_u < cliqueMaxima && grau_v < cliqueMaxima) {
+                    grafo.addAresta(u, v);
                 }
             }
         }

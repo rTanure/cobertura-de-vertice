@@ -15,6 +15,10 @@ public class Grafo{
     return this.numArestas;
   }
 
+  public Integer grauDoVertive(Integer v) {
+    return this.adjacencias.get(v).cardinality();
+  }
+
   // Construtor - Grafo vazio
   public Grafo() {
     this.numArestas = 0;
