@@ -3,6 +3,7 @@ package src;
 import java.util.HashMap;
 import java.util.Map;
 
+// Método que recupera os argumentos passados pelo usuário na geração da instância
 public class Argumentos {
     private final Map<String, String> parametros = new HashMap<>();
     private String timestamp;

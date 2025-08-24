@@ -1,5 +1,6 @@
 package src;
 
+// Classe para representar uma aresta no retorno dos métodos.
 public class Aresta {
     private Integer u;
     private Integer v;

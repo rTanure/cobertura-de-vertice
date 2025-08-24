@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.*;
 
+// Classe que representa um grafo no algoritmo
 public class Grafo{
 
   private static final String DIRETORIO_GRAFOS = "grafos";

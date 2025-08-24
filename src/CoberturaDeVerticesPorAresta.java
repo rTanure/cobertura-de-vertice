@@ -56,13 +56,18 @@ public class CoberturaDeVerticesPorAresta {
     public static Set<Integer> resolver(Grafo grafo) {
         int n = grafo.getVertices().size();
 
+        // Para cada valor de k até o |V|
         for (int k = 0; k <= n; k++) {
+            // Calcula se existe uma cobertura com no maximo k vértices
             Set<Integer> cobertura = coberturaPorAresta(grafo, k);
+
+            // Se a cobertura existe, retorne ela
             if (cobertura.size() <= k) {
                 return cobertura;
             }
         }
 
+        // A cobertura são todos os vértices
         return new HashSet<>(grafo.getVertices());
     }
 }
