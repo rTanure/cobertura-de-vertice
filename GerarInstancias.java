@@ -1,3 +1,6 @@
+// RICHARDY RODRIGUES TANURE - 22.2.8003
+// MAYKE ANSELMO BRITO LELLIS - 22.2.8008
+
 import src.Argumentos;
 import src.Gerador;
 import src.Grafo;
